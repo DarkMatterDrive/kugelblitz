@@ -62,11 +62,13 @@ canvas {
         }
     </style>
 </head>
+    <div id="dynamicScripts"></div>
 <body>
     <h1>Kugelblitz</h1>
     <button id="startBtn">Start</button>
     <button id="settingsBtn">Settings</button>
-    <p>launcher v1.0</p>
+    
+    <p>launcher v1.0.1</p>
     
     <div class="modal" id="settingsModal">
         <div class="modal-content">
@@ -87,6 +89,7 @@ canvas {
         }
         
         const startBtn = document.getElementById('startBtn');
+        const container = document.getElementById('dynamicScripts');
         const settingsBtn = document.getElementById('settingsBtn');
         const modal = document.getElementById('settingsModal');
         const scriptList = document.getElementById('scriptList');
@@ -118,7 +121,7 @@ canvas {
         // Start button
         startBtn.addEventListener('click', async () => {
             
-            document.body.innerHTML = '';
+            
             
             const scriptUrls = JSON.parse(localStorage.getItem('scriptUrls'));
             
@@ -129,9 +132,10 @@ canvas {
                 await new Promise((resolve, reject) => {
                     script.onload = resolve;
                     script.onerror = () => reject(new Error(`Failed to load: ${url}`));
-                    document.body.appendChild(script);
+                    container.appendChild(script);
                 });
             }
+            document.body.innerHTML = '';
         });
         
         modal.addEventListener('click', (e) => {
