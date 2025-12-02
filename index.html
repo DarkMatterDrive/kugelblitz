@@ -64,6 +64,7 @@ canvas {
 </head>
     <div id="dynamicScripts"></div>
 <body>
+    <div id="frontpage">
     <h1>Kugelblitz</h1>
     <button id="startBtn">Start</button>
     <button id="settingsBtn">Settings</button>
@@ -78,7 +79,7 @@ canvas {
             <button id="cancelBtn">Cancel</button>
         </div>
     </div>
-
+    </div>
     <script>
         if (!localStorage.getItem('scriptUrls')) {
             const defaultUrls = [
@@ -89,6 +90,7 @@ canvas {
         }
         
         const startBtn = document.getElementById('startBtn');
+        const deleteme = document.getElementById('frontpage');
         const container = document.getElementById('dynamicScripts');
         const settingsBtn = document.getElementById('settingsBtn');
         const modal = document.getElementById('settingsModal');
@@ -135,7 +137,7 @@ canvas {
                     container.appendChild(script);
                 });
             }
-            document.body.innerHTML = '';
+            deleteme.innerHTML = '';
         });
         
         modal.addEventListener('click', (e) => {
