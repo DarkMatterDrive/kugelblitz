@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/addons/p5.sound.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kugelblitz</title>
@@ -16,7 +14,7 @@ canvas {
             padding: 0;
             width: 100vw;
             height: 100vh;
-            background-image: url('https://cdn.discordapp.com/attachments/1440052307633901630/1440918134788849855/IMG-20251119-WA0044.jpg?ex=692f1056&is=692dbed6&hm=5ca26f96c5d18f51b193c95f171aeb5066c079a5881966ed6f7ebbd7de8bbf76&');
+            background-image: url('./images/bkg1.jpg');
             background-size: cover;
             background-position: center;
             background-size:150%;
@@ -69,7 +67,7 @@ canvas {
     <button id="startBtn">Start</button>
     <button id="settingsBtn">Settings</button>
     
-    <p>launcher v1.0.1</p>
+    <p>launcher v1.1.1</p>
     
     <div class="modal" id="settingsModal">
         <div class="modal-content">
@@ -98,6 +96,22 @@ canvas {
         const saveBtn = document.getElementById('saveBtn');
         const cancelBtn = document.getElementById('cancelBtn');
         
+        const p5Scripts = [
+            'https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.js',
+            'https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/addons/p5.sound.min.js'
+        ];
+        
+        // Helper to load scripts sequentially
+        const loadScript = (url) => {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = url;
+                script.onload = resolve;
+                script.onerror = () => reject(new Error(`Failed to load: ${url}`));
+                container.appendChild(script);
+            });
+        };
+
         // Settings button
         settingsBtn.addEventListener('click', () => {
             const urls = JSON.parse(localStorage.getItem('scriptUrls'));
@@ -120,23 +134,29 @@ canvas {
             modal.style.display = 'none';
         });
         
-        // Start button
+        // Start button - Modified to load dynamic scripts, then p5 scripts
         startBtn.addEventListener('click', async () => {
-            
-            
             
             const scriptUrls = JSON.parse(localStorage.getItem('scriptUrls'));
             
+            // 1. Load User Dynamic Scripts first
             for (const url of scriptUrls) {
-                const script = document.createElement('script');
-                script.src = url;
-                
-                await new Promise((resolve, reject) => {
-                    script.onload = resolve;
-                    script.onerror = () => reject(new Error(`Failed to load: ${url}`));
-                    container.appendChild(script);
-                });
+                try {
+                    await loadScript(url);
+                } catch (e) {
+                    console.error(e.message);
+                }
             }
+
+            // 2. Load P5.js Core Scripts after user scripts
+            for (const url of p5Scripts) {
+                try {
+                    await loadScript(url);
+                } catch (e) {
+                    console.error(e.message);
+                }
+            }
+
             deleteme.innerHTML = '';
         });
         
