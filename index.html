@@ -5,107 +5,173 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kugelblitz</title>
     <style>
-canvas {
-  display: block;
-}
+        /* General Styles */
+        canvas { display: block; }
         body {
-            margin: 0;
-            gap:0;
-            padding: 0;
-            width: 100vw;
-            height: 100vh;
+            margin: 0; padding: 0;
+            width: 100vw; height: 100vh;
             background-image: url('./images/bkg1.jpg');
-            background-size: cover;
-            background-position: center;
-            background-size:150%;
-            overflow:hidden;
+            background-size: cover; background-position: center;
+            overflow: hidden;
+            font-family: sans-serif;
+            color: #f0f0f0;
             text-align: center;
-            vertical-align:center;
-            align-items: center;
         }
-        
+
+        /* Front Page - Glassmorphism Center Box */
+        #frontpage {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 320px;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            border: 0;
+            border-radius: 1px;
+            z-index: 10;
+        }
+
+        H1 {
+            margin: 0 0 25px 0;
+            font-size: 3.5rem; font-weight: bold;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px #fff;
+            color: white;
+        }
+
+        #frontpage p { margin-top: 15px; font-size: 0.8rem; color: #aaa; }
+
         button {
-            font-size: 16px;
+            font-size: 1rem;
+            padding: 12px 30px;
+            margin: 15px auto;
+            display: block;
+            border: 0;
+            border-radius: 1px;
+            background-color: rgba(0, 255, 255, 0.1);
+            color: #fff;
+            width: 220px;
+            transition: all 0.3s ease;
         }
-        
+        button:hover {
+            background-color: rgba(255, 55, 55, 0.3);
+            box-shadow: 0 0 20px #f22;
+        }
+
+        /* Fullscreen Modal */
         .modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 20;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-        }
-        
-        .modal-content {
-            background: white;
-            padding: 20px;
-            width: 500px;
-        }
-        
-        textarea {
-            width: 100%;
-            height: 300px;
+            backdrop-filter: blur(5px);
         }
 
-        H1{
-            margin: 0;
-            font-size:3rem;
-            margin-bottom: 50px;
-            width:100vw;
-            padding-top:45vh;
-            background-color:black;
-            border-radius:20px;
+        .modal-content {
+            width: 100%; height: 100%;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
         }
+
+        textarea {
+            width: 80%; max-width: 800px;
+            height: 40vh;
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #0ff;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #0ff;
+            font-family: monospace;
+            font-size: 1rem;
+            box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.1);
+        }
+
+        /* Loading Animation */
+        #loading {
+            display: none;
+            z-index: 100;
+            background: rgb(0, 0, 0);
+            width:100vw;
+            height:100vh;
+        }
+        .spinner {
+            position: absolute;
+            top: calc(50% - 30px); left: calc(50% - 30px);
+            width: 60px; height: 60px;
+            border: 6px solid rgba(0, 255, 255, 0.1);
+            border-top: 6px solid #0ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-    <div id="dynamicScripts"></div>
 <body>
+
+    <div id="dynamicScripts"></div>
+
     <div id="frontpage">
-    <h1>Kugelblitz</h1>
-    <button id="startBtn">Start</button>
-    <button id="settingsBtn">Settings</button>
-    
-    <p>launcher v1.1.2</p>
-    
+        <h1>Kugelblitz</h1>
+        <button id="startBtn">Start</button>
+        <button id="settingsBtn">Settings</button>
+        <p>launcher v1.2.0</p>
+    </div>
+
+    <div id="loading">
+        <div class="spinner"></div>
+    </div>
+
     <div class="modal" id="settingsModal">
         <div class="modal-content">
-            <h2>script urls</h2>
+            <h2>Script URLs</h2>
             <textarea id="scriptList"></textarea>
-            <button id="saveBtn">Save</button>
-            <button id="cancelBtn">Cancel</button>
+            <div style="display:flex; gap:20px;">
+                <button id="saveBtn">Save</button>
+                <button id="cancelBtn">Cancel</button>
+            </div>
         </div>
     </div>
-    </div>
+
     <script>
+        // Init Storage
         if (!localStorage.getItem('scriptUrls')) {
             const defaultUrls = [
-                'https://darkmatterdrive.github.io/Space-Game/EnemyDrone.js',
+                'hgttps://darkmatterdrive.github.io/Space-Game/EnemyDrone.js',
                 'https://darkmatterdrive.github.io/Space-Game/PlayerB.js',
                 'https://darkmatterdrive.github.io/Space-Game/PlayerR.js',
                 'https://darkmatterdrive.github.io/Space-Game/sketch.js'
             ];
             localStorage.setItem('scriptUrls', JSON.stringify(defaultUrls));
         }
-        
+
+        // Elements
+        const frontpage = document.getElementById('frontpage');
         const startBtn = document.getElementById('startBtn');
-        const deleteme = document.getElementById('frontpage');
-        const container = document.getElementById('dynamicScripts');
         const settingsBtn = document.getElementById('settingsBtn');
         const modal = document.getElementById('settingsModal');
         const scriptList = document.getElementById('scriptList');
         const saveBtn = document.getElementById('saveBtn');
         const cancelBtn = document.getElementById('cancelBtn');
-        
+        const container = document.getElementById('dynamicScripts');
+        const loading = document.getElementById('loading');
+
         const p5Scripts = [
             'https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.js',
             'https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/addons/p5.sound.min.js'
         ];
-        
-        // Helper to load scripts sequentially
+
+        // Loader Helper
         const loadScript = (url) => {
             return new Promise((resolve, reject) => {
                 const script = document.createElement('script');
@@ -116,58 +182,47 @@ canvas {
             });
         };
 
-        // Settings button
+        // UI Logic
         settingsBtn.addEventListener('click', () => {
             const urls = JSON.parse(localStorage.getItem('scriptUrls'));
             scriptList.value = urls.join('\n');
             modal.style.display = 'flex';
         });
-        
-        // Cancel button
+
         cancelBtn.addEventListener('click', () => {
             modal.style.display = 'none';
         });
-        
-        // Save button
+
         saveBtn.addEventListener('click', () => {
-            const urls = scriptList.value
-                .split('\n')
-                .map(url => url.trim())
-                .filter(url => url.length > 0);
+            const urls = scriptList.value.split('\n').map(u => u.trim()).filter(u => u.length > 0);
             localStorage.setItem('scriptUrls', JSON.stringify(urls));
             modal.style.display = 'none';
         });
-        
-        // Start button - Modified to load dynamic scripts, then p5 scripts
+
+        // Start Game
         startBtn.addEventListener('click', async () => {
-            
+            // UI Transition
+            frontpage.style.display = 'none'; 
+            loading.style.display = 'block';
+
             const scriptUrls = JSON.parse(localStorage.getItem('scriptUrls'));
-            
-            // 1. Load User Dynamic Scripts first
-            for (const url of scriptUrls) {
-                try {
-                    await loadScript(url);
-                } catch (e) {
-                    console.error(e.message);
-                }
+
+            try {
+                // Load User Scripts
+                for (const url of scriptUrls) await loadScript(url);
+                // Load Core Scripts
+                for (const url of p5Scripts) await loadScript(url);
+            } catch (e) {
+                console.error(e);
+                alert("Failed to load scripts");
+                loading.style.display = 'none';
+                frontpage.style.display = 'block'; // Show menu again on error
+                return;
             }
 
-            // 2. Load P5.js Core Scripts after user scripts
-            for (const url of p5Scripts) {
-                try {
-                    await loadScript(url);
-                } catch (e) {
-                    console.error(e.message);
-                }
-            }
-
-            deleteme.innerHTML = '';
-        });
-        
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
+            // Cleanup - Completely remove UI elements
+            loading.remove();
+            frontpage.remove(); 
         });
     </script>
 </body>
