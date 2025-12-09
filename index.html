@@ -125,7 +125,7 @@
         <h1>Kugelblitz</h1>
         <button id="startBtn">Start</button>
         <button id="settingsBtn">Settings</button>
-        <p>launcher v1.2.0</p>
+        <p>launcher v1.2.1</p>
     </div>
 
     <div id="loading">
@@ -204,6 +204,29 @@
             // UI Transition
             frontpage.style.display = 'none'; 
             loading.style.display = 'block';
+            
+  const element = document.documentElement;
+
+  if (element.requestFullscreen) {
+    element.requestFullscreen();
+  } else if (element.mozRequestFullScreen) { // Firefox
+    element.mozRequestFullScreen();
+  } else if (element.webkitRequestFullscreen) { // Chrome, Safari, Opera
+    element.webkitRequestFullscreen();
+  } else if (element.msRequestFullscreen) { // IE/Edge
+    element.msRequestFullscreen();
+  } else { 
+      //big if
+    console.warn("L in chat for f11");
+  }
+
+            
+function updateGlobals() {
+  window.globalWidth = window.innerWidth;
+  window.globalHeight = window.innerHeight;
+}
+updateGlobals();
+window.addEventListener('resize', updateGlobals);
 
             const scriptUrls = JSON.parse(localStorage.getItem('scriptUrls'));
 
