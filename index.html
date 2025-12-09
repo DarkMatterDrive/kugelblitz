@@ -57,6 +57,8 @@ canvas {
             margin-bottom: 50px;
             width:100vw;
             padding-top:45vh;
+            background-color:black;
+            border-radius:20px;
         }
     </style>
 </head>
@@ -67,7 +69,7 @@ canvas {
     <button id="startBtn">Start</button>
     <button id="settingsBtn">Settings</button>
     
-    <p>launcher v1.1.1</p>
+    <p>launcher v1.1.2</p>
     
     <div class="modal" id="settingsModal">
         <div class="modal-content">
@@ -81,8 +83,10 @@ canvas {
     <script>
         if (!localStorage.getItem('scriptUrls')) {
             const defaultUrls = [
-                'https://raw.githubusercontent.com/example/repo/main/script1.js',
-                'https://raw.githubusercontent.com/example/repo/main/script2.js'
+                'https://darkmatterdrive.github.io/Space-Game/EnemyDrone.js',
+                'https://darkmatterdrive.github.io/Space-Game/PlayerB.js',
+                'https://darkmatterdrive.github.io/Space-Game/PlayerR.js',
+                'https://darkmatterdrive.github.io/Space-Game/sketch.js'
             ];
             localStorage.setItem('scriptUrls', JSON.stringify(defaultUrls));
         }
